@@ -1,23 +1,26 @@
 package e2e;
 
+import auctionsniper.Main;
+import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JFrameDriver;
+import com.objogate.wl.swing.driver.JLabelDriver;
 import com.objogate.wl.swing.gesture.GesturePerformer;
+
+import static org.hamcrest.Matchers.equalTo;
 
 public class AuctionSniperDriver extends JFrameDriver {
     public AuctionSniperDriver(int timeout) {
-        super(
-                new GesturePerformer(),
+        super(new GesturePerformer(),
                 JFrameDriver.topLevelFrame(
                         named(Main.MAIN_WINDOW_NAME),
-
-                ));
+                        showingOnScreen()
+                ),
+                new AWTEventQueueProber(timeout, 100)
+        );
     }
 
-    public void showsSniperStatus(String status) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public void dispose() {
-        throw new UnsupportedOperationException("TODO");
+    public void showsSniperStatus(String statusText) {
+        new JLabelDriver(this, named(Main.MAIN_WINDOW_NAME))
+                .hasText(equalTo(statusText));
     }
 }
