@@ -21,6 +21,7 @@ public class FakeAuctionServer {
     private final String loginId;
     private final XMPPConnection connection;
     private Chat currentChat;
+
     public FakeAuctionServer(String itemId) {
         this.itemId = itemId;
         this.loginId = "auction-" + itemId;
@@ -31,8 +32,8 @@ public class FakeAuctionServer {
         connection.connect();
         connection.login(this.loginId, AUCTION_PASSWORD, AUCTION_RESOURCE);
 
-        connection.getChatManager()
-                .addChatListener((chat, b) -> {
+        connection.getChatManager().addChatListener(
+                (chat, b) -> {
                     currentChat = chat;
                     chat.addMessageListener(messageListener);
                 });
