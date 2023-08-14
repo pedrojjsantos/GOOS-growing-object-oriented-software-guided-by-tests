@@ -3,10 +3,14 @@ package e2e;
 import auctionsniper.Main;
 import auctionsniper.ui.MainWindow;
 
+import static auctionsniper.Main.AUCTION_RESOURCE;
+
 public class ApplicationRunner {
     public static final String XMTTP_HOSTNAME = "localhost";
     public static final String SNIPER_ID = "sniper";
     public static final String SNIPER_PASSWORD = "sniper";
+    public static final String SNIPER_XMPP_ID = SNIPER_ID + '@' + XMTTP_HOSTNAME + '/' + AUCTION_RESOURCE;
+
 
     private AuctionSniperDriver driver;
 
@@ -24,13 +28,17 @@ public class ApplicationRunner {
         driver.showsSniperStatus(MainWindow.STATUS_JOINING);
     }
 
-    public void showsSniperHasLostAuction() {
-        driver.showsSniperStatus(MainWindow.STATUS_LOST);
-    }
-
     public void stop() {
         if (driver != null) {
             driver.dispose();
         }
+    }
+
+    public void hasShownSniperHasLostAuction() {
+        driver.showsSniperStatus(MainWindow.STATUS_LOST);
+    }
+
+    public void hasShownSniperIsBidding() {
+        driver.showsSniperStatus(MainWindow.STATUS_BIDDING);
     }
 }
