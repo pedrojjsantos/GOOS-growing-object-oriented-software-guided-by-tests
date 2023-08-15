@@ -60,32 +60,50 @@ public class FakeAuctionServer {
         );
     }
 
-    // TODO: 14/08/2023 Maybe refactor the message assertions to a builder
     public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
-        messageListener.receivesAMessage(equalTo(Main.JOIN_COMMAND_FORMAT));
-        assertThat(currentChat.getParticipant(), equalTo(ApplicationRunner.SNIPER_XMPP_ID));
-
+        messageListener.hasEntry()
+                .withMessage(equalTo(Main.JOIN_COMMAND_FORMAT))
+                .withParticipant(equalTo(ApplicationRunner.SNIPER_XMPP_ID));
     }
 
-    public void hasReceivedBid(int bid, String from) throws InterruptedException {
-        messageListener.receivesAMessage(
-                equalTo(Main.BID_COMMAND_FORMAT.formatted(bid))
-        );
-        assertThat(currentChat.getParticipant(), equalTo(from));
+    public void hasReceivedBid(int bid, String xmppId) throws InterruptedException {
+        messageListener.hasEntry()
+                .withMessage(equalTo(Main.BID_COMMAND_FORMAT.formatted(bid)))
+                .withParticipant(equalTo(xmppId));
     }
 
     public static class SingleMessageListener implements MessageListener {
-        private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<>(1);
+        private final ArrayBlockingQueue<Assertion> messages = new ArrayBlockingQueue<>(1);
 
         public void processMessage(Chat chat, Message msg) {
-            System.out.println(msg.getSubject() + ": " + msg.getBody());
-            messages.add(msg);
+            messages.add(new Assertion(chat, msg));
         }
 
-        public void receivesAMessage(Matcher<? super String> matcher) throws InterruptedException {
-            Message msg = messages.poll(5, TimeUnit.SECONDS);
-            assertThat("Message", msg, is(notNullValue()));
-            assertThat(msg.getBody(), matcher);
+        public Assertion hasEntry() throws InterruptedException {
+            Assertion entry = messages.poll(6, TimeUnit.SECONDS);
+            assertThat("No message received", entry, is(notNullValue()));
+            return entry;
+        }
+
+        static class Assertion {
+            private final Chat chat;
+            private final Message msg;
+
+            Assertion(Chat chat, Message msg) {
+                this.chat = chat;
+                this.msg = msg;
+            }
+
+            public Assertion withMessage(Matcher<? super String> matcher) {
+                assertThat("Message is null", msg, is(notNullValue()));
+                assertThat(msg.getBody(), matcher);
+                return this;
+            }
+
+            public Assertion withParticipant(Matcher<? super String> matcher) {
+                assertThat(chat.getParticipant(), matcher);
+                return this;
+            }
         }
     }
 }

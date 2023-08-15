@@ -19,22 +19,27 @@
             <artifactId>smack</artifactId>
             <version>3.2.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>
             <artifactId>smackx</artifactId>
             <version>3.2.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.googlecode.windowlicker</groupId>
             <artifactId>windowlicker-swing</artifactId>
             <version>r268</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit5</artifactId>
