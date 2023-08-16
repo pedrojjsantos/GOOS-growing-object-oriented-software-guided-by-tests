@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class AuctionSniperTest {
+    private static final String ITEM_ID = "item-54321";
+
     @RegisterExtension JUnit5Mockery context = new JUnit5Mockery();
 
     private final States sniperState = context.states("sniper");
@@ -46,9 +48,12 @@ public class AuctionSniperTest {
     public void bids_higher_and_reports_bidding_when_new_price_arrives() {
         final int price = 1001;
         final int increment = 25;
+        final int bidAmount = price + increment;
+
+        SniperState state = new SniperState(ITEM_ID, price, bidAmount);
 
         context.checking(new Expectations() {{
-            oneOf(auction).bid(price + increment);
+            oneOf(auction).bid(bidAmount);
             atLeast(1).of(sniperListener).sniperIsBidding();
         }});
 
