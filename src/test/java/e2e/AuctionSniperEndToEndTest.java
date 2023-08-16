@@ -1,8 +1,6 @@
 package e2e;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 public class AuctionSniperEndToEndTest {
     private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");
@@ -13,7 +11,8 @@ public class AuctionSniperEndToEndTest {
         System.setProperty("com.objogate.wl.keyboard", "US");
     }
 
-    @Test public void sniperJoinsAuctionUntilAuctionCloses() throws Exception {
+    @Test @DisplayName("Sniper joins auction until it closes")
+    void sniper_joins_auction_until_it_closes() throws Exception {
         auction.startSellingItem();
         application.startBiddingIn(auction);
         auction.hasReceivedJoinRequestFromSniper();
@@ -21,8 +20,8 @@ public class AuctionSniperEndToEndTest {
         application.hasShownSniperHasLostAuction();
     }
 
-    @Test
-    void sniperMakesHigherBidButLoses() throws Exception {
+    @Test @DisplayName("Sniper makes higher bid but loses")
+    void sniper_makes_higher_bid_but_loses() throws Exception {
         auction.startSellingItem();
 
         application.startBiddingIn(auction);
@@ -35,6 +34,26 @@ public class AuctionSniperEndToEndTest {
 
         auction.announceClosed();
         application.hasShownSniperHasLostAuction();
+    }
+
+    @Test @DisplayName("Sniper makes higher bid and wins")
+    void sniper_makes_higher_bid_and_wins() throws Exception {
+        auction.startSellingItem();
+
+        application.startBiddingIn(auction);
+        auction.hasReceivedJoinRequestFromSniper();
+
+        auction.reportPrice(1000, 98, "other bidder");
+        application.hasShownSniperIsBidding();
+
+        auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID);
+
+        auction.reportPrice(1098, 97, ApplicationRunner.SNIPER_XMPP_ID);
+        application.hasShownSniperIsWinning();
+
+        auction.announceClosed();
+        application.hasShownSniperHasWonAuction();
+
     }
 
     @AfterEach void stopAuction() {

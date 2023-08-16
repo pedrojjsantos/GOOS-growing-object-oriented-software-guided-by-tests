@@ -9,9 +9,12 @@ import java.util.Map;
 
 public class AuctionMessageTranslator implements MessageListener {
     private final AuctionEventListener listener;
+    private final String sniperId;
 
-    public AuctionMessageTranslator(AuctionEventListener listener) {
+
+    public AuctionMessageTranslator(String sniperId, AuctionEventListener listener) {
         this.listener = listener;
+        this.sniperId = sniperId;
     }
 
     @Override public void processMessage(Chat chat, Message message) {
@@ -19,12 +22,19 @@ public class AuctionMessageTranslator implements MessageListener {
 
         switch (event.type()) {
             case "CLOSE" -> listener.auctionClosed();
-            case "PRICE" -> listener.currentPrice(event.currentPrice(), event.increment());
+            case "PRICE" -> sendCurrentPrice(event.currentPrice(), event.increment(), event.bidder());
             default -> throw new RuntimeException("Invalid Event:" + event.type() + "!");
         }
     }
 
-    private static class AuctionEvent {
+    private void sendCurrentPrice(int price, int increment, String src) {
+        AuctionEventListener.PriceSource source = src.equals(this.sniperId) ?
+                AuctionEventListener.PriceSource.FromSniper : AuctionEventListener.PriceSource.FromOtherBidder;
+
+        listener.currentPrice(price, increment, source);
+    }
+
+    protected static class AuctionEvent {
         private final Map<String, String> fields = new HashMap<>();
 
         public String type() {
@@ -35,6 +45,9 @@ public class AuctionMessageTranslator implements MessageListener {
         }
         public int increment() {
             return getInt("Increment");
+        }
+        public String bidder() {
+            return fields.get("Bidder");
         }
 
         private int getInt(String fieldName) {

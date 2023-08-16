@@ -1,7 +1,10 @@
 package auctionsniper;
 
-public interface AuctionEventListener {
-    void auctionClosed();
+import java.util.EventListener;
 
-    void currentPrice(int currentPrice, int increment);
+public interface AuctionEventListener extends EventListener {
+    void auctionClosed();
+    void currentPrice(int price, int increment, PriceSource priceSource);
+
+    enum PriceSource {FromSniper, FromOtherBidder}
 }
