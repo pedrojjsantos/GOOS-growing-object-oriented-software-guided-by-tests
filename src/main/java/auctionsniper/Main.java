@@ -1,6 +1,8 @@
 package auctionsniper;
 
 import auctionsniper.ui.MainWindow;
+import auctionsniper.ui.SnipersTableModel;
+import auctionsniper.ui.SwingThreadSniperListener;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -21,6 +23,7 @@ public class Main {
 
     public static final String AUCTION_RESOURCE = "Auction";
 
+    private final SnipersTableModel snipers = new SnipersTableModel();
     private MainWindow ui;
 
     public Main() throws Exception {
@@ -52,7 +55,7 @@ public class Main {
         Auction auction = new XMPPAuction(chat);
         chat.addMessageListener(new AuctionMessageTranslator(
                 connection.getUser(),
-                new AuctionSniper(auction, itemID, new SniperStateDisplayer())
+                new AuctionSniper(auction, itemID, new SwingThreadSniperListener(snipers))
         ));
 
         auction.join();
@@ -78,7 +81,7 @@ public class Main {
     }
 
     private void startUserInterface() throws Exception {
-        SwingUtilities.invokeAndWait(() -> this.ui = new MainWindow());
+        SwingUtilities.invokeAndWait(() -> this.ui = new MainWindow(snipers));
     }
 
     private static String auctionID(String itemID, String serviceName) {
@@ -111,27 +114,4 @@ public class Main {
         }
     }
 
-    public class SniperStateDisplayer implements SniperListener {
-        @Override public void sniperLost() {
-            changeStatusTo(MainWindow.STATUS_LOST);
-        }
-
-        @Override public void sniperIsBidding(SniperState state) {
-            SwingUtilities.invokeLater(
-                    () -> ui.updateSniperStatus(state, MainWindow.STATUS_BIDDING)
-            );
-        }
-
-        @Override public void sniperIsWinning() {
-            changeStatusTo(MainWindow.STATUS_WINNING);
-        }
-
-        @Override public void sniperWon() {
-            changeStatusTo(MainWindow.STATUS_WON);
-        }
-
-        private void changeStatusTo(String status) {
-            SwingUtilities.invokeLater(() -> ui.showStatus(status));
-        }
-    }
 }
