@@ -18,7 +18,7 @@ public class AuctionSniperTest {
     private final Auction auction = context.mock(Auction.class);
     private final SniperListener sniperListener = context.mock(SniperListener.class);
 
-    private final AuctionSniper sniper = new AuctionSniper(auction, sniperListener);
+    private final AuctionSniper sniper = new AuctionSniper(auction, ITEM_ID, sniperListener);
 
     @Test @DisplayName("Reports loss when auction closes before bid")
     public void reports_loss_when_auction_closes() {
@@ -33,7 +33,7 @@ public class AuctionSniperTest {
     void reports_loss_when_auction_closes_while_bidding() throws Exception {
         context.checking(new Expectations() {{
             ignoring(auction);
-            allowing(sniperListener).sniperIsBidding();
+            allowing(sniperListener).sniperIsBidding(with(any(SniperState.class)));
                 then(sniperState.is("bidding"));
 
             atLeast(1).of(sniperListener).sniperLost();
@@ -54,7 +54,7 @@ public class AuctionSniperTest {
 
         context.checking(new Expectations() {{
             oneOf(auction).bid(bidAmount);
-            atLeast(1).of(sniperListener).sniperIsBidding();
+            atLeast(1).of(sniperListener).sniperIsBidding(state);
         }});
 
         sniper.currentPrice(price, increment, PriceSource.FromOtherBidder);

@@ -1,5 +1,7 @@
 package auctionsniper.ui;
 
+import auctionsniper.SniperState;
+
 import javax.swing.table.AbstractTableModel;
 
 import static auctionsniper.ui.MainWindow.STATUS_JOINING;
@@ -23,5 +25,9 @@ public class SnipersTableModel extends AbstractTableModel {
 
     @Override public Object getValueAt(int rowIndex, int columnIndex) {
         return statusText;
+    }
+
+    public void updateSniperStatus(SniperState state, String statusText) {
+
     }
 }
