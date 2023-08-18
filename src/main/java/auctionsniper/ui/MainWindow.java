@@ -3,27 +3,19 @@ package auctionsniper.ui;
 import auctionsniper.SniperState;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class MainWindow extends JFrame {
     public static final String APPLICATION_TITLE = "Auction Sniper";
     public static final String MAIN_WINDOW_NAME = "Auction Sniper Main";
-    public static final String SNIPER_STATUS_NAME = "sniper status";
-
-    public static final String STATUS_JOINING = "Joining";
-    public static final String STATUS_LOST    = "Lost";
-    public static final String STATUS_BIDDING = "Bidding";
-    public static final String STATUS_WINNING = "Winning";
-    public static final String STATUS_WON     = "Won";
     public static final String SNIPERS_TABLE_NAME = "SNIPERS_TABLE_NAME";
 
+    private final SnipersTableModel snipers;
 
-    private final SnipersTableModel snipers = new SnipersTableModel();
-
-    public MainWindow() {
+    public MainWindow(SnipersTableModel snipers) {
         super(APPLICATION_TITLE);
         setName(MAIN_WINDOW_NAME);
+        this.snipers = snipers;
         fillContentPane(makeSnipersTable());
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,11 +35,7 @@ public class MainWindow extends JFrame {
         return snipersTable;
     }
 
-    public void showStatus(String statusText) {
-        snipers.setStatusText(statusText);
-    }
-
-    public void updateSniperStatus(SniperState state, String statusText) {
-        snipers.updateSniperStatus(state, statusText);
+    public void updateSniperStatus(SniperState state) {
+        snipers.updateSniperState(state);
     }
 }
