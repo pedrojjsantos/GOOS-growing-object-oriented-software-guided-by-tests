@@ -1,6 +1,6 @@
 package auctionsniper.ui;
 
-import auctionsniper.SniperState;
+import auctionsniper.SniperSnapshot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +35,7 @@ public class MainWindow extends JFrame {
         return snipersTable;
     }
 
-    public void updateSniperStatus(SniperState state) {
+    public void updateSniperStatus(SniperSnapshot state) {
         snipers.updateSniperState(state);
     }
 }

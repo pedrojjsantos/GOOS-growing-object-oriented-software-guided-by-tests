@@ -27,7 +27,7 @@ public class AuctionSniperTest {
     @Test @DisplayName("Reports loss when auction closes before bid")
     public void reports_loss_when_auction_closes() {
         context.checking(new Expectations(){{
-            atLeast(1).of(sniperListener).updateSniperState(with(aSniperThatIs(SniperStatus.LOST)));
+            atLeast(1).of(sniperListener).updateSniperState(with(aSniperThatIs(SniperState.LOST)));
         }});
 
         sniper.auctionClosed();
@@ -37,10 +37,10 @@ public class AuctionSniperTest {
     void reports_loss_when_auction_closes_while_bidding() throws Exception {
         context.checking(new Expectations() {{
             ignoring(auction);
-            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperStatus.BIDDING)));
+            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperState.BIDDING)));
                 then(sniperState.is("bidding"));
 
-            atLeast(1).of(sniperListener).updateSniperState(with(aSniperThatIs(SniperStatus.LOST)));
+            atLeast(1).of(sniperListener).updateSniperState(with(aSniperThatIs(SniperState.LOST)));
                 when(sniperState.is("bidding"));
         }});
 
@@ -54,7 +54,7 @@ public class AuctionSniperTest {
         final int increment = 25;
         final int bidAmount = price + increment;
 
-        SniperState state = new SniperState(ITEM_ID, price, bidAmount, SniperStatus.BIDDING);
+        SniperSnapshot state = new SniperSnapshot(ITEM_ID, price, bidAmount, SniperState.BIDDING);
 
         context.checking(new Expectations() {{
             oneOf(auction).bid(bidAmount);
@@ -66,11 +66,11 @@ public class AuctionSniperTest {
 
     @Test @DisplayName("Reports winning when current price comes from sniper")
     void reports_winning_when_current_price_comes_from_sniper() throws Exception {
-        SniperState endState = new SniperState(ITEM_ID, 135, 135, SniperStatus.WINNING);
+        SniperSnapshot endState = new SniperSnapshot(ITEM_ID, 135, 135, SniperState.WINNING);
 
         context.checking(new Expectations() {{
             ignoring(auction);
-            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperStatus.BIDDING)));
+            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperState.BIDDING)));
                 then(sniperState.is("bidding"));
 
             atLeast(1).of(sniperListener).updateSniperState(endState);
@@ -85,10 +85,10 @@ public class AuctionSniperTest {
     void reports_won_when_auction_closes_while_winning() throws Exception {
         context.checking(new Expectations() {{
             ignoring(auction);
-            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperStatus.WINNING)));
+            allowing(sniperListener).updateSniperState(with(aSniperThatIs(SniperState.WINNING)));
                 then(sniperState.is("winning"));
 
-            atLeast(1).of(sniperListener).updateSniperState(new SniperState(ITEM_ID, 123, 123, SniperStatus.WON));
+            atLeast(1).of(sniperListener).updateSniperState(new SniperSnapshot(ITEM_ID, 123, 123, SniperState.WON));
                 when(sniperState.is("winning"));
         }});
 
@@ -96,11 +96,11 @@ public class AuctionSniperTest {
         sniper.auctionClosed();
     }
 
-    private Matcher<SniperState> aSniperThatIs(final SniperStatus state) {
+    private Matcher<SniperSnapshot> aSniperThatIs(final SniperState state) {
         return new FeatureMatcher<>(
                 equalTo(state), "sniper that is ", "was")
         {
-            @Override protected SniperStatus featureValueOf(SniperState actual) {
+            @Override protected SniperState featureValueOf(SniperSnapshot actual) {
                 return actual.status();
             }
         };

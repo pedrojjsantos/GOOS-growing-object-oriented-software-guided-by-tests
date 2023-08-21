@@ -1,7 +1,7 @@
 package auctionsniper.ui;
 
 import auctionsniper.SniperListener;
-import auctionsniper.SniperState;
+import auctionsniper.SniperSnapshot;
 
 import javax.swing.*;
 
@@ -13,7 +13,7 @@ public class SwingThreadSniperListener implements SniperListener {
         this.delegate = delegate;
     }
 
-    @Override public void updateSniperState(SniperState state) {
+    @Override public void updateSniperState(SniperSnapshot state) {
         SwingUtilities.invokeLater(
                 () -> delegate.updateSniperState(state)
         );

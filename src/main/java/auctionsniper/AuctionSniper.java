@@ -3,14 +3,14 @@ package auctionsniper;
 public class AuctionSniper implements AuctionEventListener {
     private final SniperListener sniperListener;
     private final Auction auction;
-    private SniperState state;
+    private SniperSnapshot state;
 
     private boolean isWinning = false;
 
     public AuctionSniper(Auction auction, String itemId, SniperListener sniperListener) {
         this.auction = auction;
         this.sniperListener = sniperListener;
-        this.state = new SniperState(itemId);
+        this.state = new SniperSnapshot(itemId);
     }
 
     @Override public void auctionClosed() {

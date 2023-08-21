@@ -1,7 +1,7 @@
 package auctionsniper.ui;
 
+import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
-import auctionsniper.SniperStatus;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.junit5.JUnit5Mockery;
@@ -42,13 +42,21 @@ class SnipersTableModelTest {
         }});
 
         model.updateSniperState(
-                new SniperState("item id", 555, 666, SniperStatus.BIDDING)
+                new SniperSnapshot("item id", 555, 666, SniperState.BIDDING)
         );
 
         assertColumnEquals(Column.ITEM_IDENTIFIER, "item id");
         assertColumnEquals(Column.LAST_PRICE, 555);
         assertColumnEquals(Column.LAST_BID, 666);
-        assertColumnEquals(Column.SNIPER_STATUS, SniperStatus.BIDDING.text());
+        assertColumnEquals(Column.SNIPER_STATUS, SniperState.BIDDING.text());
+    }
+
+    @Test @DisplayName("Sets up column headings")
+    void sets_up_column_headings() throws Exception {
+        var columns = Column.values();
+        for (int i = 0; i < columns.length; i++) {
+            assertEquals(columns[i].title(), model.getColumnName(i));
+        }
     }
 
     private void assertColumnEquals(Column column, Object expected) {
