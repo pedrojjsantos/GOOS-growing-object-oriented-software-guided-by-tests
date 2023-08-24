@@ -6,10 +6,16 @@ import auctionsniper.ui.SwingThreadSniperListener;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
     private static final int ARG_HOSTNAME = 0;
@@ -33,34 +39,44 @@ public class Main {
     public static void main(String... args) throws Exception {
         Main main = new Main();
 
-        main.joinAuction(
-                getConnection(
-                        args[ARG_HOSTNAME],
-                        args[ARG_USERNAME],
-                        args[ARG_PASSWORD]
-                ),
-                args[ARG_ITEM_ID]
+
+        XMPPConnection connection = getConnection(
+                args[ARG_HOSTNAME],
+                args[ARG_USERNAME],
+                args[ARG_PASSWORD]
         );
+
+        main.disconnectWhenUICloses(connection);
+
+        for (int i = ARG_ITEM_ID; i < args.length; i++) {
+            main.joinAuction(connection, args[i]);
+        }
     }
 
-    @SuppressWarnings({"all"}) private Chat oneChatToRuleThemAll; // Just to not let the chat get Garbage Collected
+    @SuppressWarnings({"all"}) private List<Chat> oneChatToRuleThemAll = new ArrayList<>(); // Just to not let the chat get Garbage Collected
 
-    private void joinAuction(XMPPConnection connection, String itemID) throws XMPPException {
-        disconnectWhenUICloses(connection);
-
+    private void joinAuction(XMPPConnection connection, String itemID) throws Exception {
         Chat chat = connection
                 .getChatManager()
                 .createChat(auctionID(itemID, connection.getServiceName()), null);
 
         Auction auction = new XMPPAuction(chat);
+        SwingThreadSniperListener sniperListener = new SwingThreadSniperListener(snipers);
         chat.addMessageListener(new AuctionMessageTranslator(
                 connection.getUser(),
-                new AuctionSniper(auction, itemID, new SwingThreadSniperListener(snipers))
+                new AuctionSniper(auction, itemID, sniperListener)
         ));
 
-        auction.join();
+        addSniperToModel(itemID);
 
-        this.oneChatToRuleThemAll = chat;
+        auction.join();
+        sniperListener.updateSniperState(SniperSnapshot.joining(itemID));
+
+        this.oneChatToRuleThemAll.add(chat);
+    }
+
+    private void addSniperToModel(String itemID) throws Exception {
+        SwingUtilities.invokeAndWait(() -> snipers.addSniper(SniperSnapshot.joining(itemID)));
     }
 
     private void disconnectWhenUICloses(XMPPConnection connection) {
@@ -91,6 +107,7 @@ public class Main {
 
 
     public static class XMPPAuction implements Auction {
+        private static final Logger logger = LoggerFactory.getLogger(XMPPAuction.class);
         private final Chat chat;
 
         public XMPPAuction(Chat chat) {
@@ -106,6 +123,7 @@ public class Main {
         }
 
         private void sendMessage(final String message) {
+            logger.info("Sending msg to '" + chat.getParticipant() + "': " + message);
             try {
                 chat.sendMessage(message);
             } catch (XMPPException e) {

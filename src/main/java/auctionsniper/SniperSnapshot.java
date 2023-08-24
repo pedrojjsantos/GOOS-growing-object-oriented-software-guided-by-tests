@@ -9,6 +9,10 @@ public record SniperSnapshot(String itemId, int lastPrice, int lastBid, SniperSt
         return new SniperSnapshot("");
     }
 
+    public static SniperSnapshot joining(String itemID) {
+        return new SniperSnapshot(itemID);
+    }
+
     public SniperSnapshot winning(int price) {
         return new SniperSnapshot(itemId, price, price, SniperState.WINNING);
     }
@@ -31,5 +35,9 @@ public record SniperSnapshot(String itemId, int lastPrice, int lastBid, SniperSt
 
     public String statusText() {
         return status.text();
+    }
+
+    public boolean hasSameItemAs(SniperSnapshot snapshot) {
+        return this.itemId.equals(snapshot.itemId());
     }
 }

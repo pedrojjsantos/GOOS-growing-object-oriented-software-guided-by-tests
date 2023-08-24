@@ -11,6 +11,7 @@ import javax.swing.table.JTableHeader;
 
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
 
 public class AuctionSniperDriver extends JFrameDriver {
@@ -26,6 +27,16 @@ public class AuctionSniperDriver extends JFrameDriver {
 
     public void showsSniperStatus(String statusText) {
         new JTableDriver(this).hasCell(withLabelText(equalTo(statusText)));
+    }
+
+    public void showsSniperStatus(String itemId, String statusText) {
+        JTableDriver table = new JTableDriver(this);
+        table.hasRow(matching(
+                withLabelText(itemId),
+                withLabelText(any(String.class)),
+                withLabelText(any(String.class)),
+                withLabelText(statusText)
+        ));
     }
 
     public void showsSniperStatus(String itemId, int lastPrice, int lastBid, String statusText) {
