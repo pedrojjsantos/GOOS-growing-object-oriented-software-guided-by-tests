@@ -5,11 +5,6 @@ import org.junit.jupiter.api.*;
 public class AuctionSniperEndToEndTest {
     private final ApplicationRunner application = new ApplicationRunner();
 
-    @BeforeAll
-    static void setUp() {
-        System.setProperty("com.objogate.wl.keyboard", "US");
-    }
-
     @Nested @DisplayName("Single sniper")
     class SingleSniper {
         private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");

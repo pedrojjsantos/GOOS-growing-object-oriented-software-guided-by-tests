@@ -1,12 +1,10 @@
 package auctionsniper.ui;
 
 import auctionsniper.SniperSnapshot;
-import auctionsniper.SniperState;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.junit5.JUnit5Mockery;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -15,9 +13,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SnipersTableModelTest {
     @RegisterExtension JUnit5Mockery context = new JUnit5Mockery();
@@ -32,30 +31,28 @@ class SnipersTableModelTest {
     }
 
     @Test @DisplayName("Has enough columns")
-    void has_enough_columns() throws Exception {
+    void has_enough_columns() {
         assertThat(model.getColumnCount(), equalTo(Column.values().length));
     }
 
     @Test @DisplayName("Updates sniper values in columns")
-    void sets_sniper_values_in_columns() throws Exception {
+    void sets_sniper_values_in_columns() {
         context.checking(new Expectations() {{
             allowing(listener).tableChanged(with(anInsertionAtRow(0)));
             oneOf(listener).tableChanged(with(aRowChangedEvent(0)));
         }});
 
-        model.addSniper(SniperSnapshot.joining("item id"));
-        model.updateSniperState(
-                new SniperSnapshot("item id", 555, 666, SniperState.BIDDING)
-        );
+        SniperSnapshot joiningSnapshot = SniperSnapshot.joining("item id");
+        SniperSnapshot biddingSnapshot = joiningSnapshot.bidding(555, 666);
 
-        assertColumnEquals(Column.ITEM_IDENTIFIER, "item id");
-        assertColumnEquals(Column.LAST_PRICE, 555);
-        assertColumnEquals(Column.LAST_BID, 666);
-        assertColumnEquals(Column.SNIPER_STATUS, SniperState.BIDDING.text());
+        model.addSniper(joiningSnapshot);
+        model.updateSniperState(biddingSnapshot);
+
+        assertRowMatchesSnapshot(0, biddingSnapshot);
     }
 
     @Test @DisplayName("Sets up column headings")
-    void sets_up_column_headings() throws Exception {
+    void sets_up_column_headings() {
         var columns = Column.values();
         for (int i = 0; i < columns.length; i++) {
             assertEquals(columns[i].title(), model.getColumnName(i));
@@ -63,7 +60,7 @@ class SnipersTableModelTest {
     }
 
     @Test @DisplayName("Notifies listener when adding a sniper")
-    void notifies_listener_when_adding_a_sniper() throws Exception {
+    void notifies_listener_when_adding_a_sniper() {
         var joining = SniperSnapshot.joining("itemId");
         context.checking(new Expectations() {{
             oneOf(listener).tableChanged(with(anInsertionAtRow(0)));
@@ -76,6 +73,19 @@ class SnipersTableModelTest {
         assertEquals(1, model.getRowCount());
 
         assertRowMatchesSnapshot(0, joining);
+    }
+
+    @Test @DisplayName("Holds snipers in addition order")
+    void holds_snipers_in_addition_order() {
+        context.checking(new Expectations() { {
+            ignoring(listener);
+        }});
+
+        model.addSniper(SniperSnapshot.joining("item 0"));
+        model.addSniper(SniperSnapshot.joining("item 1"));
+        assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
+        assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
+
     }
 
     private void assertRowMatchesSnapshot(int row, SniperSnapshot snapshot) {

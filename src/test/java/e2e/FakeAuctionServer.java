@@ -79,7 +79,7 @@ public class FakeAuctionServer {
             messages.add(new Assertion(chat, msg));
         }
 
-        public Assertion hasEntry() throws InterruptedException {
+        private Assertion hasEntry() throws InterruptedException {
             Assertion entry = messages.poll(6, TimeUnit.SECONDS);
             assertThat("No message received", entry, is(notNullValue()));
             return entry;
@@ -95,8 +95,7 @@ public class FakeAuctionServer {
             }
 
             public Assertion withMessage(Matcher<? super String> matcher) {
-                assertThat("Message is null", msg, is(notNullValue()));
-                assertThat(msg.getBody(), matcher);
+                assertThat(msg, hasProperty("body", matcher));
                 return this;
             }
 
