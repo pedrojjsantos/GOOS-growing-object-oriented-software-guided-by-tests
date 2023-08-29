@@ -3,11 +3,15 @@ package auctionsniper;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AuctionMessageTranslator implements MessageListener {
+    private static final Logger logger = LoggerFactory.getLogger(XMPPAuction.class);
+
     private final AuctionEventListener listener;
     private final String sniperId;
 
@@ -18,6 +22,7 @@ public class AuctionMessageTranslator implements MessageListener {
     }
 
     @Override public void processMessage(Chat chat, Message message) {
+        logger.info("Processing message: '" + message.getBody() + "'");
         AuctionEvent event = AuctionEvent.from(message.getBody());
 
         switch (event.type()) {

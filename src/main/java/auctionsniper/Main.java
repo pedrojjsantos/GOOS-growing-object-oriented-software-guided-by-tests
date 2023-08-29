@@ -3,11 +3,8 @@ package auctionsniper;
 import auctionsniper.ui.MainWindow;
 import auctionsniper.ui.SnipersTableModel;
 import auctionsniper.ui.SwingThreadSniperListener;
-import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -47,26 +44,19 @@ public class Main {
         main.addUserRequestListenerFor(connection);
     }
 
+    @SuppressWarnings({"all"}) private List<Auction> oneAuctionToRuleThemAll = new ArrayList<>(); // Just to not let the chat get Garbage Collected
+
     private void addUserRequestListenerFor(final XMPPConnection connection) {
         ui.addUserRequestListener(itemId -> {
             snipers.addSniper(SniperSnapshot.joining(itemId));
 
-            Chat chat = connection
-                    .getChatManager()
-                    .createChat(auctionID(itemId, connection.getServiceName()), null);
-
-            oneChatToRuleThemAll.add(chat);
-
-            Auction auction = new XMPPAuction(chat);
-            chat.addMessageListener(new AuctionMessageTranslator(
-                    connection.getUser(),
-                    new AuctionSniper(auction, itemId, new SwingThreadSniperListener(snipers))));
-
+            Auction auction = new XMPPAuction(connection, itemId);
+            auction.addListener(new AuctionSniper(auction, itemId, new SwingThreadSniperListener(snipers)));
             auction.join();
+
+            oneAuctionToRuleThemAll.add(auction);
         });
     }
-
-    @SuppressWarnings({"all"}) private List<Chat> oneChatToRuleThemAll = new ArrayList<>(); // Just to not let the chat get Garbage Collected
 
     private void disconnectWhenUICloses(XMPPConnection connection) {
         ui.addWindowListener(new WindowAdapter() {
@@ -88,37 +78,4 @@ public class Main {
     private void startUserInterface() throws Exception {
         SwingUtilities.invokeAndWait(() -> this.ui = new MainWindow(snipers));
     }
-
-    private static String auctionID(String itemID, String serviceName) {
-        String login = "auction-" + itemID;
-        return "%s@%s/%s".formatted(login, serviceName, AUCTION_RESOURCE);
-    }
-
-
-    public static class XMPPAuction implements Auction {
-        private static final Logger logger = LoggerFactory.getLogger(XMPPAuction.class);
-        private final Chat chat;
-
-        public XMPPAuction(Chat chat) {
-            this.chat = chat;
-        }
-
-        public void bid(int amount) {
-            sendMessage(BID_COMMAND_FORMAT.formatted(amount));
-        }
-
-        public void join() {
-            sendMessage(JOIN_COMMAND_FORMAT);
-        }
-
-        private void sendMessage(final String message) {
-            logger.info("Sending msg to '" + chat.getParticipant() + "': " + message);
-            try {
-                chat.sendMessage(message);
-            } catch (XMPPException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }
