@@ -1,6 +1,7 @@
 package e2e;
 
 import auctionsniper.Main;
+import auctionsniper.xmpp.XMPPAuction;
 import org.hamcrest.Matcher;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
@@ -15,6 +16,9 @@ public class FakeAuctionServer {
     public static final String AUCTION_RESOURCE = "Auction";
     public static final String XMPP_HOSTNAME = "localhost";
     public static final String AUCTION_PASSWORD = "auction";
+
+    public static final String CLOSE_COMMAND_FORMAT = "SOLVersion: 1.1; Event: CLOSE;";
+
 
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
@@ -49,7 +53,7 @@ public class FakeAuctionServer {
     }
 
     public void announceClosed() throws XMPPException {
-        currentChat.sendMessage(Main.CLOSE_COMMAND_FORMAT);
+        currentChat.sendMessage(CLOSE_COMMAND_FORMAT);
     }
 
     public void reportPrice(int price, int increment, String winningBidder) throws XMPPException {
@@ -62,13 +66,13 @@ public class FakeAuctionServer {
 
     public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
         messageListener.hasEntry()
-                .withMessage(equalTo(Main.JOIN_COMMAND_FORMAT))
+                .withMessage(equalTo(XMPPAuction.JOIN_COMMAND_FORMAT))
                 .withParticipant(equalTo(ApplicationRunner.SNIPER_XMPP_ID));
     }
 
     public void hasReceivedBid(int bid, String xmppId) throws InterruptedException {
         messageListener.hasEntry()
-                .withMessage(equalTo(Main.BID_COMMAND_FORMAT.formatted(bid)))
+                .withMessage(equalTo(XMPPAuction.BID_COMMAND_FORMAT.formatted(bid)))
                 .withParticipant(equalTo(xmppId));
     }
 

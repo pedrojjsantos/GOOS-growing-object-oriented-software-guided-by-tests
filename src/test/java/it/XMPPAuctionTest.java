@@ -2,10 +2,9 @@ package it;
 
 import auctionsniper.Auction;
 import auctionsniper.AuctionEventListener;
-import auctionsniper.XMPPAuction;
+import auctionsniper.xmpp.XMPPAuctionHouse;
 import e2e.ApplicationRunner;
 import e2e.FakeAuctionServer;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,24 +17,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class XMPPAuctionTest {
     private FakeAuctionServer server;
-    private XMPPConnection connection;
+    private XMPPAuctionHouse auctionhouse;
 
     @BeforeEach void setUp() throws XMPPException {
         this.server = new FakeAuctionServer("item-54321");
         server.startSellingItem();
-        this.connection = getConnection();
+
+        this.auctionhouse = XMPPAuctionHouse.connect(
+                ApplicationRunner.XMPP_HOSTNAME,
+                ApplicationRunner.SNIPER_ID,
+                ApplicationRunner.SNIPER_PASSWORD
+        );
     }
     @AfterEach void stopAuction() {
         server.stop();
     }
     @AfterEach void disconnect() {
-        connection.disconnect();
+        auctionhouse.disconnect();
     }
 
     @Test @DisplayName("Receives events from auction server after joining")
     void receives_events_from_auction_server_after_joining() throws Exception {
         CountDownLatch auctionWasClosed = new CountDownLatch(1);
-        Auction auction = new XMPPAuction(connection, server.getItemId());
+
+        Auction auction = auctionhouse.auctionFor(server.getItemId());
         auction.addListener(auctionClosedListener(auctionWasClosed));
         auction.join();
 
@@ -43,17 +48,6 @@ class XMPPAuctionTest {
         server.announceClosed();
 
         assertTrue(auctionWasClosed.await(2, TimeUnit.SECONDS), "should have been closed");
-    }
-
-    private static XMPPConnection getConnection() throws XMPPException {
-        XMPPConnection connection = new XMPPConnection(FakeAuctionServer.XMPP_HOSTNAME);
-        connection.connect();
-        connection.login(
-                ApplicationRunner.SNIPER_ID,
-                ApplicationRunner.SNIPER_PASSWORD,
-                FakeAuctionServer.AUCTION_RESOURCE
-        );
-        return connection;
     }
 
     private AuctionEventListener auctionClosedListener(final CountDownLatch auctionWasClosed) {

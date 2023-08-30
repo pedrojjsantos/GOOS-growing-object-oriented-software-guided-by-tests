@@ -4,7 +4,7 @@ import auctionsniper.Main;
 import auctionsniper.SniperState;
 import auctionsniper.ui.MainWindow;
 
-import static auctionsniper.Main.AUCTION_RESOURCE;
+import static auctionsniper.xmpp.XMPPAuctionHouse.AUCTION_RESOURCE;
 
 public class ApplicationRunner {
     public static final String XMPP_HOSTNAME = "localhost";
