@@ -1,16 +1,15 @@
 package auctionsniper.ui;
 
-import auctionsniper.SniperListener;
-import auctionsniper.SniperSnapshot;
+import auctionsniper.*;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
-    private SniperSnapshot currentState = SniperSnapshot.initialState();
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperCollector {
+    @SuppressWarnings({"all"}) private final List<AuctionSniper> oneSniperToRuleThemAll = new ArrayList<AuctionSniper>(); // Just to not let the auctions get Garbage Collected
 
-    private List<SniperSnapshot> snapshots = new ArrayList<>();
+    private final List<SniperSnapshot> snapshots = new ArrayList<>();
 
     @Override public String getColumnName(int column) {
         return Column.at(column).title();
@@ -29,8 +28,6 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     }
 
     @Override public void updateSniperState(SniperSnapshot snapshot) {
-        currentState = snapshot;
-
         int row = rowMatching(snapshot);
         snapshots.set(row, snapshot);
 
@@ -46,9 +43,16 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         throw new RuntimeException("Cannot find match for " + snapshot);
     }
 
-    public void addSniper(SniperSnapshot snapshot) {
+    public void addSnapshot(SniperSnapshot snapshot) {
+        int row = snapshots.size();
         snapshots.add(snapshot);
-        int row = snapshots.size() - 1;
         fireTableRowsInserted(row, row);
+    }
+
+    @Override public void addSniper(AuctionSniper sniper) {
+        addSnapshot(sniper.getSnapshot());
+        sniper.addListener(this);
+
+        oneSniperToRuleThemAll.add(sniper);
     }
 }

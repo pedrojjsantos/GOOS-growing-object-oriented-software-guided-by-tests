@@ -4,6 +4,7 @@ import auctionsniper.ui.MainWindow;
 import auctionsniper.ui.SnipersTableModel;
 import com.objogate.wl.swing.probe.ValueMatcherProbe;
 import e2e.AuctionSniperDriver;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,5 +25,9 @@ public class MainWindowTest {
         mainWindow.addUserRequestListener(buttonProbe::setReceivedValue);
         driver.startBiddingFor(itemId);
         driver.check(buttonProbe);
+    }
+
+    @AfterEach void tearDown() {
+        driver.dispose();
     }
 }

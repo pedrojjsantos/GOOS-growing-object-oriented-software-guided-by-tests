@@ -6,6 +6,7 @@ import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.States;
 import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -22,7 +23,12 @@ public class AuctionSniperTest {
     private final Auction auction = context.mock(Auction.class);
     private final SniperListener sniperListener = context.mock(SniperListener.class);
 
-    private final AuctionSniper sniper = new AuctionSniper(auction, ITEM_ID, sniperListener);
+    private final AuctionSniper sniper = new AuctionSniper(auction, ITEM_ID);
+
+    @BeforeEach void setUp() {
+        this.sniper.addListener(sniperListener);
+
+    }
 
     @Test @DisplayName("Reports loss when auction closes before bid")
     public void reports_loss_when_auction_closes() {

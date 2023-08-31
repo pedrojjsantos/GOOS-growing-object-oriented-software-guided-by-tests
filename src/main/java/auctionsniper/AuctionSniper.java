@@ -1,35 +1,42 @@
 package auctionsniper;
 
+import auctionsniper.util.Announcer;
+
 public class AuctionSniper implements AuctionEventListener {
-    private final SniperListener sniperListener;
+    private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
     private final Auction auction;
-    private SniperSnapshot state;
+    private SniperSnapshot snapshot;
 
-    private boolean isWinning = false;
-
-    public AuctionSniper(Auction auction, String itemId, SniperListener sniperListener) {
+    public AuctionSniper(Auction auction, String itemId) {
         this.auction = auction;
-        this.sniperListener = sniperListener;
-        this.state = new SniperSnapshot(itemId);
+        this.snapshot = new SniperSnapshot(itemId);
     }
 
     @Override public void auctionClosed() {
-        state = state.isWinning() ? state.won() : state.lost();
+        snapshot = snapshot.isWinning() ? snapshot.won() : snapshot.lost();
 
-        sniperListener.updateSniperState(state);
+        listeners.announce().updateSniperState(snapshot);
     }
 
     @Override public void currentPrice(int price, int increment, PriceSource source) {
         int bidAmount = price + increment;
 
         switch (source) {
-            case FromSniper -> state = state.winning(price);
+            case FromSniper -> snapshot = snapshot.winning(price);
             case FromOtherBidder -> {
                 auction.bid(bidAmount);
-                state = state.bidding(price, bidAmount);
+                snapshot = snapshot.bidding(price, bidAmount);
             }
         }
 
-        sniperListener.updateSniperState(state);
+        listeners.announce().updateSniperState(snapshot);
+    }
+
+    public SniperSnapshot getSnapshot() {
+        return this.snapshot;
+    }
+
+    public void addListener(SniperListener sniperListener) {
+        listeners.addListener(sniperListener);
     }
 }

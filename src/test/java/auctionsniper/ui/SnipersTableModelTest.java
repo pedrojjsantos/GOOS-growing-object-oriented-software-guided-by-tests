@@ -45,7 +45,7 @@ class SnipersTableModelTest {
         SniperSnapshot joiningSnapshot = SniperSnapshot.joining("item id");
         SniperSnapshot biddingSnapshot = joiningSnapshot.bidding(555, 666);
 
-        model.addSniper(joiningSnapshot);
+        model.addSnapshot(joiningSnapshot);
         model.updateSniperState(biddingSnapshot);
 
         assertRowMatchesSnapshot(0, biddingSnapshot);
@@ -68,7 +68,7 @@ class SnipersTableModelTest {
 
         assertEquals(0, model.getRowCount());
 
-        model.addSniper(joining);
+        model.addSnapshot(joining);
 
         assertEquals(1, model.getRowCount());
 
@@ -81,8 +81,8 @@ class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.addSniper(SniperSnapshot.joining("item 0"));
-        model.addSniper(SniperSnapshot.joining("item 1"));
+        model.addSnapshot(SniperSnapshot.joining("item 0"));
+        model.addSnapshot(SniperSnapshot.joining("item 1"));
         assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
         assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
 

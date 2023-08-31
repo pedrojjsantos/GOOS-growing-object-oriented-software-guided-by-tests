@@ -1,31 +1,25 @@
 package auctionsniper;
 
-import auctionsniper.ui.SnipersTableModel;
-import auctionsniper.ui.SwingThreadSniperListener;
 import auctionsniper.ui.UserRequestListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SniperLauncher implements UserRequestListener {
-    @SuppressWarnings({"all"}) private final List<Auction> oneAuctionToRuleThemAll = new ArrayList<>(); // Just to not let the auctions get Garbage Collected
     private final AuctionHouse auctionHouse;
-    private final SnipersTableModel snipers;
+    private final SniperCollector collector;
 
-    public SniperLauncher(AuctionHouse auctionHouse, SnipersTableModel snipers) {
+    public SniperLauncher(AuctionHouse auctionHouse, SniperCollector snipers) {
         this.auctionHouse = auctionHouse;
-        this.snipers = snipers;
+        this.collector = snipers;
     }
 
     @Override public void joinAuction(String itemId) {
-        snipers.addSniper(SniperSnapshot.joining(itemId));
-
         Auction auction = auctionHouse.auctionFor(itemId);
-        AuctionSniper sniper = new AuctionSniper(auction, itemId, new SwingThreadSniperListener(snipers));
+        AuctionSniper sniper = new AuctionSniper(auction, itemId);
 
         auction.addListener(sniper);
+        collector.addSniper(sniper);
         auction.join();
-
-        oneAuctionToRuleThemAll.add(auction);
     }
 }
