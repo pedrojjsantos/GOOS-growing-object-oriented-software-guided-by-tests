@@ -43,7 +43,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         throw new RuntimeException("Cannot find match for " + snapshot);
     }
 
-    public void addSnapshot(SniperSnapshot snapshot) {
+    private void addSnapshot(SniperSnapshot snapshot) {
         int row = snapshots.size();
         snapshots.add(snapshot);
         fireTableRowsInserted(row, row);
