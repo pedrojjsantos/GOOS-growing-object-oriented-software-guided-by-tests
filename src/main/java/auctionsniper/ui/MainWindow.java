@@ -1,5 +1,6 @@
 package auctionsniper.ui;
 
+import auctionsniper.SniperPortfolio;
 import auctionsniper.util.Announcer;
 
 import javax.swing.*;
@@ -12,17 +13,25 @@ public class MainWindow extends JFrame {
     public static final String NEW_ITEM_ID_NAME = "item id";
     public static final String JOIN_BUTTON_NAME = "join auction";
 
-    private final SnipersTableModel snipers;
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
-    public MainWindow(SnipersTableModel snipers) {
+    public MainWindow(SniperPortfolio sniperPortfolio) {
         super(APPLICATION_TITLE);
         setName(MAIN_WINDOW_NAME);
-        this.snipers = snipers;
-        fillContentPane(makeSnipersTable(), makeControls());
+        fillContentPane(makeSnipersTable(sniperPortfolio), makeControls());
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    private JTable makeSnipersTable(SniperPortfolio portfolio) {
+        SnipersTableModel model = new SnipersTableModel();
+        portfolio.addListener(model);
+
+        JTable table = new JTable(model);
+        table.setName(SNIPERS_TABLE_NAME);
+
+        return table;
     }
 
     private void fillContentPane(JTable snipersTable, JPanel controls) {
@@ -30,12 +39,6 @@ public class MainWindow extends JFrame {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(controls, BorderLayout.NORTH);
         contentPane.add(new JScrollPane(snipersTable), BorderLayout.CENTER);
-    }
-
-    private JTable makeSnipersTable() {
-        final JTable snipersTable = new JTable(snipers);
-        snipersTable.setName(SNIPERS_TABLE_NAME);
-        return snipersTable;
     }
 
     private JPanel makeControls() {

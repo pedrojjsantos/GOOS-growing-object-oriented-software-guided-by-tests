@@ -6,9 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperCollector {
-    @SuppressWarnings({"all"}) private final List<AuctionSniper> oneSniperToRuleThemAll = new ArrayList<AuctionSniper>(); // Just to not let the auctions get Garbage Collected
-
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperPortfolio.PortfolioListener {
     private final List<SniperSnapshot> snapshots = new ArrayList<>();
 
     @Override public String getColumnName(int column) {
@@ -49,10 +47,8 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         fireTableRowsInserted(row, row);
     }
 
-    @Override public void addSniper(AuctionSniper sniper) {
+    @Override public void sniperWasAdded(AuctionSniper sniper) {
         addSnapshot(sniper.getSnapshot());
         sniper.addListener(this);
-
-        oneSniperToRuleThemAll.add(sniper);
     }
 }

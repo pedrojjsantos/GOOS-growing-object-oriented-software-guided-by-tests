@@ -62,7 +62,7 @@ class SnipersTableModelTest {
         AuctionSniper sniper = createSniper("item-id");
         SniperSnapshot biddingSnapshot = sniper.getSnapshot().bidding(555, 666);
 
-        model.addSniper(sniper);
+        model.sniperWasAdded(sniper);
         model.updateSniperState(biddingSnapshot);
 
         assertRowMatchesSnapshot(0, biddingSnapshot);
@@ -85,7 +85,7 @@ class SnipersTableModelTest {
         assertEquals(0, model.getRowCount());
 
         AuctionSniper sniper = createSniper("item-id");
-        model.addSniper(sniper);
+        model.sniperWasAdded(sniper);
 
         assertEquals(1, model.getRowCount());
 
@@ -101,8 +101,8 @@ class SnipersTableModelTest {
         String itemId0 = "item 0";
         String itemId1 = "item 1";
 
-        model.addSniper(createSniper(itemId0));
-        model.addSniper(createSniper(itemId1));
+        model.sniperWasAdded(createSniper(itemId0));
+        model.sniperWasAdded(createSniper(itemId1));
         assertEquals(itemId0, cellValue(0, Column.ITEM_IDENTIFIER));
         assertEquals(itemId1, cellValue(1, Column.ITEM_IDENTIFIER));
 

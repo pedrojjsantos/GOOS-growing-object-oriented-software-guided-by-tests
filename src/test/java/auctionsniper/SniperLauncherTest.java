@@ -5,13 +5,11 @@ import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.States;
 import org.jmock.junit5.JUnit5Mockery;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
 
 public class SniperLauncherTest {
     @RegisterExtension JUnit5Mockery context = new JUnit5Mockery();
@@ -26,7 +24,7 @@ public class SniperLauncherTest {
     private final SniperLauncher launcher = new SniperLauncher(auctionHouse, sniperCollector);
 
     @Test @DisplayName("Adds a new sniper to collector and joins auction")
-    void adds_a_new_sniper_to_collector_and_joins_auction() throws Exception {
+    void adds_a_new_sniper_to_collector_and_joins_auction() {
         final String itemId = "item 123";
 
         context.checking(new Expectations() {{
