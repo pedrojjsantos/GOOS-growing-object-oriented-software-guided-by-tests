@@ -4,6 +4,7 @@ public enum SniperState {
     JOINING("Joining"),
     BIDDING("Bidding"),
     WINNING("Winning"),
+    LOSING("Losing"),
     LOST("Lost"),
     WON("Won");
 

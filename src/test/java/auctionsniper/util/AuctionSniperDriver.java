@@ -58,10 +58,22 @@ public class AuctionSniperDriver extends JFrameDriver {
 
 
     public void startBiddingFor(String itemId) {
-        var textField = itemIdField();
-        clear(textField);
-        textField.replaceAllText(itemId);
+        typeInField(itemIdField(), itemId);
+        typeInField(stopPriceField(), Integer.MAX_VALUE + "");
+
         bidButton().click();
+    }
+
+    public void startBiddingFor(String itemId, int stopPrice) {
+        typeInField(itemIdField(), itemId);
+        typeInField(stopPriceField(), stopPrice + "");
+
+        bidButton().click();
+    }
+
+    private void typeInField(JTextFieldDriver textField, String text) {
+        clear(textField);
+        textField.replaceAllText(text);
     }
 
     private void clear(JTextFieldDriver textField) {
@@ -69,11 +81,20 @@ public class AuctionSniperDriver extends JFrameDriver {
     }
 
     private JTextFieldDriver itemIdField() {
+        return textField(MainWindow.NEW_ITEM_ID_NAME);
+    }
+
+    private JTextFieldDriver stopPriceField() {
+        return textField(MainWindow.NEW_ITEM_STOP_PRICE_NAME);
+    }
+
+    private JTextFieldDriver textField(String fieldId) {
         JTextFieldDriver newItemId =
-                new JTextFieldDriver(this, JTextField.class, named(MainWindow.NEW_ITEM_ID_NAME));
+                new JTextFieldDriver(this, JTextField.class, named(fieldId));
         newItemId.focusWithMouse();
         return newItemId;
     }
+
     private JButtonDriver bidButton() {
         return new JButtonDriver(this, JButton.class, named(MainWindow.JOIN_BUTTON_NAME));
     }

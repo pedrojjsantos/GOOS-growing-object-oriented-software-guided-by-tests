@@ -1,5 +1,6 @@
 package auctionsniper.integration;
 
+import auctionsniper.Item;
 import auctionsniper.SniperPortfolio;
 import auctionsniper.ui.MainWindow;
 import auctionsniper.util.AuctionSniperDriver;
@@ -18,12 +19,12 @@ public class MainWindowTest {
     void makes_user_request_when_join_button_clicked() {
         String itemId = "item-id";
 
-        final ValueMatcherProbe<String> buttonProbe =
-                new ValueMatcherProbe<>(equalTo(itemId), "join request");
+        final ValueMatcherProbe<Item> itemProbe =
+                new ValueMatcherProbe<>(equalTo(new Item(itemId, 789)), "item request");
 
-        mainWindow.addUserRequestListener(buttonProbe::setReceivedValue);
-        driver.startBiddingFor(itemId);
-        driver.check(buttonProbe);
+        mainWindow.addUserRequestListener(itemProbe::setReceivedValue);
+        driver.startBiddingFor(itemId, 789);
+        driver.check(itemProbe);
     }
 
     @AfterEach void tearDown() {

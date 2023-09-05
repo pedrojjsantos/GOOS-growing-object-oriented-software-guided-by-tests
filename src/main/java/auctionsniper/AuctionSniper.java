@@ -5,11 +5,13 @@ import auctionsniper.util.Announcer;
 public class AuctionSniper implements AuctionEventListener {
     private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
     private final Auction auction;
+    private final Item item;
     private SniperSnapshot snapshot;
 
-    public AuctionSniper(Auction auction, String itemId) {
+    public AuctionSniper(Auction auction, Item item) {
         this.auction = auction;
-        this.snapshot = new SniperSnapshot(itemId);
+        this.item = item;
+        this.snapshot = new SniperSnapshot(item.id());
     }
 
     @Override public void auctionClosed() {
@@ -24,8 +26,12 @@ public class AuctionSniper implements AuctionEventListener {
         switch (source) {
             case FromSniper -> snapshot = snapshot.winning(price);
             case FromOtherBidder -> {
-                auction.bid(bidAmount);
-                snapshot = snapshot.bidding(price, bidAmount);
+                if (item.canBid(bidAmount)) {
+                    auction.bid(bidAmount);
+                    snapshot = snapshot.bidding(price, bidAmount);
+                } else {
+                    snapshot = snapshot.losing(price);
+                }
             }
         }
 

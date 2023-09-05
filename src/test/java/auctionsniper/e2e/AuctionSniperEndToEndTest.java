@@ -55,6 +55,42 @@ public class AuctionSniperEndToEndTest {
             application.hasShownSniperHasWonAuction(auction, 1098);
         }
 
+        @Test @DisplayName("Sniper should lose when price is too high")
+        void sniper_loses_auction_when_price_is_too_high() throws Exception {
+            auction.startSellingItem();
+            application.startBiddingWithStopPrice(auction, 1100);
+
+            auction.hasReceivedJoinRequestFromSniper();
+            auction.reportPrice(1000,98, "other bidder");
+            application.hasShownSniperIsBidding(auction, 1000, 1098);
+
+            auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID);
+
+            auction.reportPrice(1197, 10, "third party");
+            application.hasShownSniperIsLosing(auction, 1197, 1098);
+
+            auction.reportPrice(1207, 10, "fourth party");
+            application.hasShownSniperIsLosing(auction, 1207, 1098);
+
+            auction.announceClosed();
+            application.hasShownSniperHasLostAuction(auction, 1207, 1098);
+        }
+
+        @Test @DisplayName("does not bid and reports losing if first price above stop price")
+        void does_not_bid_and_reports_losing_if_first_price_above_stop_price() throws Exception {
+            auction.startSellingItem();
+            application.startBiddingWithStopPrice(auction, 1100);
+
+            auction.hasReceivedJoinRequestFromSniper();
+            auction.reportPrice(1101,98, "other bidder");
+
+            application.hasShownSniperIsLosing(auction, 1101, 0);
+
+            auction.announceClosed();
+            application.hasShownSniperHasLostAuction(auction, 1101, 0);
+
+        }
+
         @AfterEach void stopAuction() {
             auction.stop();
         }

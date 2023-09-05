@@ -1,9 +1,6 @@
 package auctionsniper.unit.ui;
 
-import auctionsniper.Auction;
-import auctionsniper.AuctionEventListener;
-import auctionsniper.AuctionSniper;
-import auctionsniper.SniperSnapshot;
+import auctionsniper.*;
 import auctionsniper.ui.Column;
 import auctionsniper.ui.SnipersTableModel;
 import org.hamcrest.Matcher;
@@ -111,7 +108,7 @@ class SnipersTableModelTest {
     }
 
     private AuctionSniper createSniper(String itemId) {
-        return new AuctionSniper(nullAuction, itemId);
+        return new AuctionSniper(nullAuction, new Item(itemId));
     }
 
     private void assertRowMatchesSnapshot(int row, SniperSnapshot snapshot) {

@@ -1,6 +1,7 @@
 package auctionsniper.unit;
 
 import auctionsniper.AuctionSniper;
+import auctionsniper.Item;
 import auctionsniper.SniperPortfolio;
 import org.jmock.Expectations;
 import org.jmock.junit5.JUnit5Mockery;
@@ -16,7 +17,7 @@ public class SniperPortfolioTest {
 
     @Test @DisplayName("Notifies listeners of new snipers")
     void notifies_listeners_of_new_snipers() {
-        AuctionSniper sniper = new AuctionSniper(null, "item id");
+        AuctionSniper sniper = new AuctionSniper(null, new Item("item id"));
 
         context.checking(new Expectations() {{
             oneOf(listener).sniperWasAdded(sniper);
