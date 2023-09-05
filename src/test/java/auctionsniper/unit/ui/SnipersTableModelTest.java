@@ -1,9 +1,11 @@
-package auctionsniper.ui;
+package auctionsniper.unit.ui;
 
 import auctionsniper.Auction;
 import auctionsniper.AuctionEventListener;
 import auctionsniper.AuctionSniper;
 import auctionsniper.SniperSnapshot;
+import auctionsniper.ui.Column;
+import auctionsniper.ui.SnipersTableModel;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.junit5.JUnit5Mockery;

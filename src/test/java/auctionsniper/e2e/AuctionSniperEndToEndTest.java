@@ -1,6 +1,8 @@
-package e2e;
+package auctionsniper.e2e;
 
+import auctionsniper.util.FakeAuctionServer;
 import org.junit.jupiter.api.*;
+import auctionsniper.util.ApplicationRunner;
 
 public class AuctionSniperEndToEndTest {
     private final ApplicationRunner application = new ApplicationRunner();

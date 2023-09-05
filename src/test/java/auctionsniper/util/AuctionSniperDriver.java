@@ -1,4 +1,4 @@
-package e2e;
+package auctionsniper.util;
 
 import auctionsniper.ui.MainWindow;
 import com.objogate.wl.swing.AWTEventQueueProber;
@@ -11,7 +11,6 @@ import javax.swing.table.JTableHeader;
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
 import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.equalTo;
 
 public class AuctionSniperDriver extends JFrameDriver {
     static { System.setProperty("com.objogate.wl.keyboard", "US"); }

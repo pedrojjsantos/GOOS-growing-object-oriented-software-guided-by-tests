@@ -1,5 +1,6 @@
-package auctionsniper;
+package auctionsniper.unit;
 
+import auctionsniper.*;
 import auctionsniper.AuctionEventListener.PriceSource;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;

@@ -1,7 +1,9 @@
-package auctionsniper.ui;
+package auctionsniper.unit.ui;
 
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
+import auctionsniper.ui.Column;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +17,7 @@ class ColumnTest {
         final SniperSnapshot snapshot =
                 new SniperSnapshot("item id", 123, 890, SniperState.BIDDING);
 
-        assertThat(Column.ITEM_IDENTIFIER.valueIn(snapshot), equalTo("item id"));
+        MatcherAssert.assertThat(Column.ITEM_IDENTIFIER.valueIn(snapshot), equalTo("item id"));
         assertThat(Column.LAST_PRICE.valueIn(snapshot),      equalTo(123));
         assertThat(Column.LAST_BID.valueIn(snapshot),        equalTo(890));
         assertThat(Column.SNIPER_STATUS.valueIn(snapshot),   equalTo(SniperState.BIDDING.text()));

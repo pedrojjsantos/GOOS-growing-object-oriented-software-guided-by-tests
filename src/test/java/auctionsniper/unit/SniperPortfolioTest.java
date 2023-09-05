@@ -1,5 +1,7 @@
-package auctionsniper;
+package auctionsniper.unit;
 
+import auctionsniper.AuctionSniper;
+import auctionsniper.SniperPortfolio;
 import org.jmock.Expectations;
 import org.jmock.junit5.JUnit5Mockery;
 import org.junit.jupiter.api.DisplayName;

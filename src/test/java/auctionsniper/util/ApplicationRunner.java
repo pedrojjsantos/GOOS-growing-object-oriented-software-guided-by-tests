@@ -1,4 +1,4 @@
-package e2e;
+package auctionsniper.util;
 
 import auctionsniper.Main;
 import auctionsniper.SniperState;

@@ -1,10 +1,9 @@
-package it;
+package auctionsniper.integration;
 
 import auctionsniper.SniperPortfolio;
 import auctionsniper.ui.MainWindow;
-import auctionsniper.ui.SnipersTableModel;
+import auctionsniper.util.AuctionSniperDriver;
 import com.objogate.wl.swing.probe.ValueMatcherProbe;
-import e2e.AuctionSniperDriver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

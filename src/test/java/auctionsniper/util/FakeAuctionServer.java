@@ -1,6 +1,5 @@
-package e2e;
+package auctionsniper.util;
 
-import auctionsniper.Main;
 import auctionsniper.xmpp.XMPPAuction;
 import org.hamcrest.Matcher;
 import org.jivesoftware.smack.*;

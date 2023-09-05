@@ -1,10 +1,10 @@
-package it;
+package auctionsniper.integration;
 
 import auctionsniper.Auction;
 import auctionsniper.AuctionEventListener;
 import auctionsniper.xmpp.XMPPAuctionHouse;
-import e2e.ApplicationRunner;
-import e2e.FakeAuctionServer;
+import auctionsniper.util.ApplicationRunner;
+import auctionsniper.util.FakeAuctionServer;
 import org.jivesoftware.smack.XMPPException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
